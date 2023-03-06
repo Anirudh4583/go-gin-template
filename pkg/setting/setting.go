@@ -1,57 +1,79 @@
 package setting
 
-import "time"
+import (
+	"log"
+	"time"
+
+	"github.com/spf13/viper"
+)
 
 type App struct {
-	JwtSecret string
-	PageSize  int
-	PrefixUrl string
+	JwtSecret string `mapstructure:"JwtSecret"`
+	PageSize  int    `mapstructure:"PageSize"`
+	PrefixUrl string `mapstructure:"PrefixUrl"`
 
-	RuntimeRootPath string
+	RuntimeRootPath string `mapstructure:"RuntimeRootPath"`
 
 	// ExportSavePath string
 	// FontSavePath string
 
-	LogSavePath string
-	LogSaveName string
-	LogFileExt  string
-	TimeFormat  string
+	LogSavePath string    `mapstructure:"LogSavePath"`
+	LogSaveName string    `mapstructure:"LogSaveName"`
+	LogFileExt  string    `mapstructure:"LogFileExt"`
+	TimeFormat  time.Time `mapstructure:"TimeFormat"`
 }
-
-var AppSetting = &App{}
 
 type Server struct {
-	RunMode      string
-	HttpPort     int
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
+	RunMode      string        `mapstructure:"RunMode"`
+	HttpPort     int           `mapstructure:"HttpPort"`
+	ReadTimeout  time.Duration `mapstructure:"ReadTimeout"`
+	WriteTimeout time.Duration `mapstructure:"WriteTimeout"`
 }
-
-var ServerSetting = &Server{}
 
 type Database struct {
 	// Type        string
-	User        string
-	Password    string
-	Host        string
-	Port        string
-	Name        string
-	TablePrefix string
+	User        string `mapstructure:"User"`
+	Password    string `mapstructure:"Password"`
+	Host        string `mapstructure:"Host"`
+	Port        string `mapstructure:"Port"`
+	Name        string `mapstructure:"Name"`
+	TablePrefix string `mapstructure:"TablePrefix"`
 }
-
-var DatabaseSetting = &Database{}
 
 type Redis struct {
-	Host        string
-	Port        string
-	Password    string
-	MaxIdle     string
-	MaxActive   string
-	IdleTimeout time.Duration
+	Host        string        `mapstructure:"Host"`
+	Port        string        `mapstructure:"Port"`
+	Password    string        `mapstructure:"Password"`
+	MaxIdle     string        `mapstructure:"MaxIdle"`
+	MaxActive   string        `mapstructure:"MaxActive"`
+	IdleTimeout time.Duration `mapstructure:"IdleTimeout"`
 }
 
-var RedisSetting = &Redis{}
+type Setting struct {
+	AppSetting      App      `mapstructure:"App"`
+	ServerSetting   Server   `mapstructure:"Server"`
+	DatabaseSetting Database `mapstructure:"Database"`
+	RedisSetting    Redis    `mapstructure:"Redis"`
+}
 
-func setup() {
+var setting = &Setting{}
 
+func Setup() {
+	viper.SetConfigName(".env")
+	viper.SetConfigType("yml")
+	viper.AddConfigPath(".")
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("Cannot load the specified config file; %s", err)
+	}
+
+	if err := viper.Unmarshal(setting); err != nil {
+		log.Fatalf("Cannot unmarshal the config into struct; %s", err)
+	}
+
+	setting.ServerSetting.ReadTimeout = setting.ServerSetting.ReadTimeout * time.Second
+	setting.ServerSetting.WriteTimeout = setting.ServerSetting.WriteTimeout * time.Second
+	setting.RedisSetting.IdleTimeout = setting.RedisSetting.IdleTimeout * time.Second
+
+	// fmt.Println(*setting)
 }
