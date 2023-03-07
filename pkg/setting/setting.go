@@ -56,7 +56,7 @@ type Setting struct {
 	RedisSetting    Redis    `mapstructure:"Redis"`
 }
 
-var setting = &Setting{}
+var Config = &Setting{}
 
 func Setup() {
 	viper.SetConfigName(".env")
@@ -67,13 +67,11 @@ func Setup() {
 		log.Fatalf("Cannot load the specified config file; %s", err)
 	}
 
-	if err := viper.Unmarshal(setting); err != nil {
+	if err := viper.Unmarshal(Config); err != nil {
 		log.Fatalf("Cannot unmarshal the config into struct; %s", err)
 	}
 
-	setting.ServerSetting.ReadTimeout = setting.ServerSetting.ReadTimeout * time.Second
-	setting.ServerSetting.WriteTimeout = setting.ServerSetting.WriteTimeout * time.Second
-	setting.RedisSetting.IdleTimeout = setting.RedisSetting.IdleTimeout * time.Second
-
-	// fmt.Println(*setting)
+	Config.ServerSetting.ReadTimeout = Config.ServerSetting.ReadTimeout * time.Second
+	Config.ServerSetting.WriteTimeout = Config.ServerSetting.WriteTimeout * time.Second
+	Config.RedisSetting.IdleTimeout = Config.RedisSetting.IdleTimeout * time.Second
 }
