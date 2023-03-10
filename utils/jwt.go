@@ -1,59 +1,59 @@
 package utils
 
 import (
-	"errors"
-	"fmt"
 	"time"
-
+    "fmt"
+    "net/http"
 	"github.com/golang-jwt/jwt"
 )
 
-const minSecretKeySize = 32
+var jwtSecret []byte
 
-type JWTMaker struct {
-    secretKey string
+type Claims struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	jwt.StandardClaims
 }
 
-func NewJWTMaker(secretKey string) (Maker, error) {
-    if len(secretKey) < minSecretKeySize {
-        return nil, fmt.Errorf("invalid key size: must be at least %d characters", minSecretKeySize)
-    }
-    return &JWTMaker{secretKey}, nil
+// GenerateToken generate tokens used for auth
+var sampleSecretKey = []byte("GoLinuxCloudKey")
+
+func generateJWT(username string) (string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+
+	claims["authorized"] = true
+	claims["username"] = username
+	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
+
+	tokenString, err := token.SignedString(sampleSecretKey)
+
+	if err != nil {
+		fmt.Errorf("Something Went Wrong: %s", err.Error())
+		return "", err
+	}
+	return tokenString, nil
 }
 
-func (maker *JWTMaker) CreateToken(username string, password string, duration time.Duration) (string, error) {
-    payload, err := NewPayload(username, password, duration)
-    if err != nil {
-        return "", err
-    }
 
-    jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
-    return jwtToken.SignedString([]byte(maker.secretKey))
-}
+// ParseToken parsing token
+func validateToken(w http.ResponseWriter, r *http.Request) (err error) {
 
+	if r.Header["Token"] == nil {
+		fmt.Fprintf(w, "can not find token in header")
+		return
+	}
 
-func (maker *JWTMaker) VerifyToken(token string) (*Payload, error) {
-    keyFunc := func(token *jwt.Token) (interface{}, error) {
-        _, ok := token.Method.(*jwt.SigningMethodHMAC)
-        if !ok {
-            return nil, ErrInvalidToken
-        }
-        return []byte(maker.secretKey), nil
-    }
+	token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("There was an error in parsing")
+		}
+		return sampleSecretKey, nil
+	})
 
-    jwtToken, err := jwt.ParseWithClaims(token, &Payload{}, keyFunc)
-    if err != nil {
-        verr, ok := err.(*jwt.ValidationError)
-        if ok && errors.Is(verr.Inner, ErrExpiredToken) {
-            return nil, ErrExpiredToken
-        }
-        return nil, ErrInvalidToken
-    }
+	if token == nil {
+		fmt.Fprintf(w, "invalid token")
+	}
 
-    payload, ok := jwtToken.Claims.(*Payload)
-    if !ok {
-        return nil, ErrInvalidToken
-    }
-
-    return payload, nil
+	return nil
 }
