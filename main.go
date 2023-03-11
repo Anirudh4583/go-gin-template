@@ -6,11 +6,13 @@ import (
 	"net/http"
 
 	"github.com/Anirudh4583/go-gin-template/pkg/setting"
+	util "github.com/Anirudh4583/go-gin-template/utils"
 	"github.com/gin-gonic/gin"
 )
 
 func init() {
 	setting.Setup()
+	util.Setup()
 }
 
 func main() {
