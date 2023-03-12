@@ -17,7 +17,7 @@ func GenerateToken(username string) (string, error) {
 	nowTime := time.Now()
 	expTime := time.Now().Add(24 * time.Hour)
 	claims := Claims{
-		username, // TODO: use some kind of encoding/hashing before storing in token
+		username,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expTime),
 			IssuedAt:  jwt.NewNumericDate(nowTime),
