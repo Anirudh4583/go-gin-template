@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Anirudh4583/go-gin-template/pkg/setting"
+	"github.com/Anirudh4583/go-gin-template/database"
 	util "github.com/Anirudh4583/go-gin-template/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -13,6 +14,7 @@ import (
 func init() {
 	setting.Setup()
 	util.Setup()
+	database.Setup()
 }
 
 func main() {
