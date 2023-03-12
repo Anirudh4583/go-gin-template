@@ -1,4 +1,4 @@
-package database
+package models
 
 import (
 	"fmt"
@@ -9,9 +9,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
+func Setup(){
 
-func ConnectToDb() *gorm.DB {
-    // Build the connection string
     dbURI := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
         setting.Config.DatabaseSetting.Host,
         setting.Config.DatabaseSetting.Port, 
@@ -25,5 +24,7 @@ func ConnectToDb() *gorm.DB {
         log.Fatalf("Error connecting to the database: %v", err)
     }
 
-    return db
+    defer db.Close()
+
+    fmt.Println("Connected to the database!")   
 }
