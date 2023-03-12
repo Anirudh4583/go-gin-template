@@ -1,7 +1,6 @@
 package setting
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/spf13/viper"
@@ -56,6 +55,4 @@ func Setup() {
 	if err := viper.Unmarshal(Config); err != nil {
 		log.Fatalf("Cannot unmarshal the config into struct; %s", err)
 	}
-
-	fmt.Println(Config)
 }

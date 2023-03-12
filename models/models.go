@@ -9,6 +9,12 @@ import (
 	_ "github.com/lib/pq"
 )
 
+type Test struct {
+	gorm.Model
+	Username string `gorm:"type:varchar(100);unique_index" json:"username"`
+	Password string `gorm:"type:varchar(100)" json:"password"`
+}
+
 func Setup() {
 
 	dbURI := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
@@ -26,5 +32,7 @@ func Setup() {
 
 	defer db.Close()
 
-	fmt.Println("Connected to the database!")
+	db.Debug().AutoMigrate(&Test{})
+
+	fmt.Println("[info] Connected to the database!")
 }
