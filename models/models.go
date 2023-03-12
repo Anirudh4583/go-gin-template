@@ -6,6 +6,7 @@ import (
 
 	"github.com/Anirudh4583/go-gin-template/pkg/setting"
 	"github.com/jinzhu/gorm"
+	_ "github.com/lib/pq"
 )
 
 func Setup() {

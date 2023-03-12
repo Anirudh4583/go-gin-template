@@ -5,13 +5,11 @@ go 1.20
 require (
 	github.com/gin-gonic/gin v1.9.0
 	github.com/jinzhu/gorm v1.9.16
+	github.com/lib/pq v1.10.7
 	github.com/spf13/viper v1.15.0
 )
 
-require (
-	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/lib/pq v1.10.7 // indirect
-)
+require github.com/jinzhu/inflection v1.0.0 // indirect
 
 require (
 	github.com/bytedance/sonic v1.8.0 // indirect
