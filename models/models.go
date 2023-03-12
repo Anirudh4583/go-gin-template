@@ -11,11 +11,11 @@ import (
 func Setup() {
 
 	dbURI := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
-		setting.Config.DatabaseSetting.Host,
-		setting.Config.DatabaseSetting.Port,
-		setting.Config.DatabaseSetting.Name,
-		setting.Config.DatabaseSetting.User,
-		setting.Config.DatabaseSetting.Password)
+		setting.Config.DBHost,
+		setting.Config.DBPort,
+		setting.Config.DBName,
+		setting.Config.DBUser,
+		setting.Config.DBPassword)
 
 	// Connect to the database
 	db, err := gorm.Open("postgres", dbURI)

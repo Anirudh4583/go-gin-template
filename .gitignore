@@ -21,6 +21,6 @@
 go.work
 
 # env and ini files 
-.env
+*.env
 .env.local
 .env.yml

@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
-	"github.com/Anirudh4583/go-gin-template/pkg/setting"
 	"github.com/Anirudh4583/go-gin-template/models"
+	"github.com/Anirudh4583/go-gin-template/pkg/setting"
 	util "github.com/Anirudh4583/go-gin-template/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -20,15 +21,24 @@ func init() {
 func main() {
 	println("Hello GO API!")
 
-	gin.SetMode(setting.Config.ServerSetting.RunMode)
+	gin.SetMode(setting.Config.ServerRunMode)
 
-	port := fmt.Sprintf(":%d", setting.Config.ServerSetting.HttpPort)
+	port := fmt.Sprintf(":%d", setting.Config.ServerHttpPort)
 	router := gin.Default()
 	router.GET("/health", func(ctx *gin.Context) {
 		ctx.String(200, "health check passed!")
 	})
-	readTimout := setting.Config.ServerSetting.ReadTimeout
-	writeTimeout := setting.Config.ServerSetting.WriteTimeout
+
+	var err error
+
+	readTimout, err := time.ParseDuration(setting.Config.ServerReadTimeout + "s")
+	if err != nil {
+		log.Fatalf("cannot parse server read timeout: %v", err)
+	}
+	writeTimeout, err := time.ParseDuration(setting.Config.ServerWriteTimeout + "s")
+	if err != nil {
+		log.Fatalf("cannot parse server write timeout: %v", err)
+	}
 
 	s := &http.Server{
 		Addr:           port,

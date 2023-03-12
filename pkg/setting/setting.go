@@ -1,67 +1,53 @@
 package setting
 
 import (
+	"fmt"
 	"log"
-	"time"
 
 	"github.com/spf13/viper"
 )
 
-type App struct {
-	JwtSecret string `mapstructure:"JwtSecret"`
-	PageSize  int    `mapstructure:"PageSize"`
-	PrefixUrl string `mapstructure:"PrefixUrl"`
-
-	RuntimeRootPath string `mapstructure:"RuntimeRootPath"`
-
+type Setting struct {
+	// APP
+	AppJwtSecret       string `mapstructure:"APP_JWT_SECRET"`
+	AppPageSize        int    `mapstructure:"APP_PAGE_SIZE"`
+	AppPrefixUrl       string `mapstructure:"APP_PREFIX_URL"`
+	AppRuntimeRootPath string `mapstructure:"APP_RUNTIME_ROOTPATH"`
 	// ExportSavePath string
 	// FontSavePath string
+	AppLogSavePath string `mapstructure:"APP_LOG_SAVE_PATH"`
+	AppLogSaveName string `mapstructure:"APP_LOG_SAVE_NAME"`
+	AppLogFileExt  string `mapstructure:"APP_LOG_FILE_EXT"`
+	AppTimeFormat  string `mapstructure:"APP_TIME_FORMAT"`
 
-	LogSavePath string    `mapstructure:"LogSavePath"`
-	LogSaveName string    `mapstructure:"LogSaveName"`
-	LogFileExt  string    `mapstructure:"LogFileExt"`
-	TimeFormat  time.Time `mapstructure:"TimeFormat"`
-}
+	// Server
+	ServerRunMode      string `mapstructure:"SERVER_RUN_MODE"`
+	ServerHttpPort     int    `mapstructure:"SERVER_HTTP_PORT"`
+	ServerReadTimeout  string `mapstructure:"SERVER_READ_TIMEOUT"`
+	ServerWriteTimeout string `mapstructure:"SERVER_WRITE_TIMEOUT"`
 
-type Server struct {
-	RunMode      string        `mapstructure:"RunMode"`
-	HttpPort     int           `mapstructure:"HttpPort"`
-	ReadTimeout  time.Duration `mapstructure:"ReadTimeout"`
-	WriteTimeout time.Duration `mapstructure:"WriteTimeout"`
-}
-
-type Database struct {
+	// Database
 	// Type        string
-	User        string `mapstructure:"User"`
-	Password    string `mapstructure:"Password"`
-	Host        string `mapstructure:"Host"`
-	Port        string `mapstructure:"Port"`
-	Name        string `mapstructure:"Name"`
-	TablePrefix string `mapstructure:"TablePrefix"`
-}
+	DBUser        string `mapstructure:"DB_USER"`
+	DBPassword    string `mapstructure:"DB_PASSWORD"`
+	DBHost        string `mapstructure:"DB_HOST"`
+	DBPort        string `mapstructure:"DB_PORT"`
+	DBName        string `mapstructure:"DB_NAME"`
+	DBTablePrefix string `mapstructure:"DB_TABLE_PREFIX"`
 
-type Redis struct {
-	Host        string        `mapstructure:"Host"`
-	Port        string        `mapstructure:"Port"`
-	Password    string        `mapstructure:"Password"`
-	MaxIdle     string        `mapstructure:"MaxIdle"`
-	MaxActive   string        `mapstructure:"MaxActive"`
-	IdleTimeout time.Duration `mapstructure:"IdleTimeout"`
-}
-
-type Setting struct {
-	AppSetting      App      `mapstructure:"App"`
-	ServerSetting   Server   `mapstructure:"Server"`
-	DatabaseSetting Database `mapstructure:"Database"`
-	RedisSetting    Redis    `mapstructure:"Redis"`
+	// Redis
+	RedisHost        string `mapstructure:"REDIS_HOST"`
+	RedisPort        string `mapstructure:"REDIS_PORT"`
+	RedisPassword    string `mapstructure:"REDIS_PASSWORD"`
+	RedisMaxIdle     string `mapstructure:"REDIS_MAX_IDLE"`
+	RedisMaxActive   string `mapstructure:"REDIS_MAX_ACTIVE"`
+	RedisIdleTimeout string `mapstructure:"REDIS_IDLE_TIMEOUT"`
 }
 
 var Config = &Setting{}
 
 func Setup() {
-	viper.SetConfigName(".env")
-	viper.SetConfigType("yml")
-	viper.AddConfigPath(".")
+	viper.SetConfigFile(".env")
 
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalf("Cannot load the specified config file; %s", err)
@@ -71,7 +57,5 @@ func Setup() {
 		log.Fatalf("Cannot unmarshal the config into struct; %s", err)
 	}
 
-	Config.ServerSetting.ReadTimeout = Config.ServerSetting.ReadTimeout * time.Second
-	Config.ServerSetting.WriteTimeout = Config.ServerSetting.WriteTimeout * time.Second
-	Config.RedisSetting.IdleTimeout = Config.RedisSetting.IdleTimeout * time.Second
+	fmt.Println(Config)
 }
