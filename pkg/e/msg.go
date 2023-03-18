@@ -13,8 +13,7 @@ var MsgFlags = map[int]string{
 	ERROR_AUTH:                      "Token error",
 }
 
-// GetMsg get error information based on Code
-func GetMsg(code int) string {
+func GetErrorMessage(code int) string {
 	msg, ok := MsgFlags[code]
 	if ok {
 		return msg
