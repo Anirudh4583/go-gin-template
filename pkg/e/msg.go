@@ -1,6 +1,6 @@
 package e
 
-var MsgFlags = map[int]string{
+var ErrorMessageFlags = map[int]string{
 	SUCCESS:                         "ok",
 	ERROR:                           "fail",
 	INVALID_PARAMS:                  "request parameter error",
@@ -14,10 +14,10 @@ var MsgFlags = map[int]string{
 }
 
 func GetErrorMessage(code int) string {
-	msg, ok := MsgFlags[code]
+	msg, ok := ErrorMessageFlags[code]
 	if ok {
 		return msg
 	}
 
-	return MsgFlags[ERROR]
+	return ErrorMessageFlags[ERROR]
 }
